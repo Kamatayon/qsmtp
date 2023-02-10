@@ -3,7 +3,7 @@
 #define KXVER 3
 
 #include "k.h"
-#include "smtp.h"
+#include "smtp.c"
 
 #define setVar(f) if(strcmp(key, "f")==0) {fields--;f = value;}
 
@@ -15,12 +15,12 @@ K add(K x) {
 K send_mail(K x);
 
 K send_mail(K x) {
-  if(xt != XD) krr("type");
+  if(xt != XD) return krr("type");
   char *server, *port, *user, *pass, *from, *from_name, *subject, *body, *to, *to_name, *auth;
 
   char *key;
   char* value;
-  int fields = 8;
+  int fields = 12;
   int dict_size = kK(x)[0] -> n;
   for(int i = 0; i<dict_size; i++){
     key = kS(kK(x)[0])[i];
@@ -35,8 +35,8 @@ K send_mail(K x) {
     setVar(body);
     setVar(to);
     setVar(to_name);
-    setVar(auth);
   }
+  if (fields != 10) return krr("invalid_dict");
 
   struct smtp *smtp;
   int rc;
