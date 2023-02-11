@@ -1,0 +1,32 @@
+[
+  {
+    "arguments": [
+      "/bin/gcc",
+      "-c",
+      "-fPIC",
+      "-DSMTP_OPENSSL",
+      "-DKXVER=3",
+      "-o",
+      "qsmtp.so",
+      "qsmtp.c"
+    ],
+    "directory": "/mnt/hdd/code/trash/kdb/c-smtp",
+    "file": "/mnt/hdd/code/trash/kdb/c-smtp/qsmtp.c",
+    "output": "/mnt/hdd/code/trash/kdb/c-smtp/qsmtp.so"
+  },
+  {
+    "arguments": [
+      "/bin/gcc",
+      "-c",
+      "-fPIC",
+      "-DSMTP_OPENSSL",
+      "-DKXVER=3",
+      "-o",
+      "qsmtp.so",
+      "smtp.c"
+    ],
+    "directory": "/mnt/hdd/code/trash/kdb/c-smtp",
+    "file": "/mnt/hdd/code/trash/kdb/c-smtp/smtp.c",
+    "output": "/mnt/hdd/code/trash/kdb/c-smtp/qsmtp.so"
+  }
+]

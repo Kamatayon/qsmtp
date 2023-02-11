@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#define KXVER 3
 
 #include "k.h"
-#include "smtp.c"
 
-#define setVar(f) if(strcmp(key, "f")==0) {fields--;f = value;}
+#include "smtp.h"
+
+#define setVar(F) if(strcmp(key, #F)==0) {fields--;F = value;}
 
 K add(K x) {
   if (x->t != -KJ) krr("type");
@@ -16,11 +16,11 @@ K send_mail(K x);
 
 K send_mail(K x) {
   if(xt != XD) return krr("type");
-  char *server, *port, *user, *pass, *from, *from_name, *subject, *body, *to, *to_name, *auth;
+  char *server, *port, *user, *pass, *from, *from_name, *subject, *body, *to, *to_name;
 
   char *key;
   char* value;
-  int fields = 12;
+  int fields = 10;
   int dict_size = kK(x)[0] -> n;
   for(int i = 0; i<dict_size; i++){
     key = kS(kK(x)[0])[i];
@@ -36,11 +36,13 @@ K send_mail(K x) {
     setVar(to);
     setVar(to_name);
   }
-  if (fields != 10) return krr("invalid_dict");
-
+  if (fields != 0) return krr("invalid_dict");
+  
   struct smtp *smtp;
   int rc;
-  rc = smtp_open(server, port, SMTP_SECURITY_NONE, SMTP_NO_CERT_VERIFY, NULL, &smtp);
+  fprintf(stderr, "%s %s\n", server, port);
+  rc = smtp_open(server, port, SMTP_SECURITY_STARTTLS, SMTP_NO_CERT_VERIFY, NULL, &smtp);
+  fprintf(stderr, "%s\n", smtp_status_code_errstr(rc));
   rc = smtp_auth(smtp,
                  SMTP_AUTH_PLAIN,
                  user,
