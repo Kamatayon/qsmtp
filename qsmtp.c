@@ -1,11 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "k.h"
 
 #include "smtp.h"
 
-#define setVar(F) if(strcmp(key, #F)==0) {fields--;F = value;}
+#define setVar(F) if(strcmp(key, #F)==0) {fields--;F = malloc(size);F[size]='\0';memcpy(F, value, size);}
 
 K add(K x) {
   if (x->t != -KJ) krr("type");
@@ -20,11 +21,13 @@ K send_mail(K x) {
 
   char *key;
   char* value;
+  int size;
   int fields = 10;
   int dict_size = kK(x)[0] -> n;
   for(int i = 0; i<dict_size; i++){
     key = kS(kK(x)[0])[i];
     value = (char*) kC(kK(kK(x)[1])[i]);
+    size = (kK(kK(x)[1])[i]) -> n;
     setVar(server);
     setVar(port);
     setVar(user);
@@ -40,7 +43,7 @@ K send_mail(K x) {
   
   struct smtp *smtp;
   int rc;
-  fprintf(stderr, "%s %s\n", server, port);
+  fprintf(stderr, "%s %s %s %s\n", server, port, user, pass);
   rc = smtp_open(server, port, SMTP_SECURITY_STARTTLS, SMTP_NO_CERT_VERIFY, NULL, &smtp);
   fprintf(stderr, "%s\n", smtp_status_code_errstr(rc));
   rc = smtp_auth(smtp,
@@ -61,6 +64,8 @@ K send_mail(K x) {
   rc = smtp_mail(smtp,
                  body);
   rc = smtp_close(smtp);
+  // TODO: free
+  free(server); free(port); free(user); free(pass); free(from); free(from_name); free(subject); free(body); free(to); free(to_name);
   if(rc != SMTP_STATUS_OK){
     fprintf(stderr, "smtp failed: %s\n", smtp_status_code_errstr(rc));
     return ki(1);
