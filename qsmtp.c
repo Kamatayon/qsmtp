@@ -22,6 +22,7 @@ K send_mail(K x) {
   char *key;
   char* value;
   int size;
+  server = port = user = pass = from = from_name = subject = body = to = to_name = NULL;
   int fields = 10;
   int dict_size = kK(x)[0] -> n;
   for(int i = 0; i<dict_size; i++){
@@ -39,8 +40,8 @@ K send_mail(K x) {
     setVar(to);
     setVar(to_name);
   }
-  if (fields != 0) return krr("invalid_dict");
-  
+  if(server == NULL || port == NULL || pass == NULL || from == NULL || from_name == NULL || subject == NULL || body == NULL || to == NULL || to_name == NULL) return krr("invalid_dict");
+
   struct smtp *smtp;
   int rc;
   fprintf(stderr, "%s %s %s %s\n", server, port, user, pass);
