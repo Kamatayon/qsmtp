@@ -25,8 +25,11 @@ K send_mail(K x) {
   server = port = user = pass = from = from_name = subject = body = to = to_name = NULL;
   int fields = 10;
   int dict_size = kK(x)[0] -> n;
+  if(kK(x)[0] -> t != KS) return krr("wrong key type");
+  if(kK(x)[1] -> t != 0) return krr("wrong value type");
   for(int i = 0; i<dict_size; i++){
     key = kS(kK(x)[0])[i];
+    if(kK(kK(x)[1])[i] -> t != KC) continue;
     value = (char*) kC(kK(kK(x)[1])[i]);
     size = (kK(kK(x)[1])[i]) -> n;
     setVar(server);
@@ -44,9 +47,7 @@ K send_mail(K x) {
 
   struct smtp *smtp;
   int rc;
-  fprintf(stderr, "%s %s %s %s\n", server, port, user, pass);
   rc = smtp_open(server, port, SMTP_SECURITY_STARTTLS, SMTP_NO_CERT_VERIFY, NULL, &smtp);
-  fprintf(stderr, "%s\n", smtp_status_code_errstr(rc));
   rc = smtp_auth(smtp,
                  SMTP_AUTH_PLAIN,
                  user,
